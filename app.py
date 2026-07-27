@@ -33,7 +33,7 @@ with st.expander("Cross tab"):
     st.dataframe(crosstab_df)
 
 # K-means
-k = st.slider("Number of clusters", 5, 15, 1)
+k = st.sidebar.slider("Number of clusters", 5, 15, 1)
 X = crosstab_df.to_numpy()
 model = KMeans(n_clusters=k)
 labels = model.fit_predict(X)
@@ -49,13 +49,14 @@ X_pca = pca_size.fit_transform(X)
 crosstab_df["dim_1"] = X_pca[:,0]
 crosstab_df["dim_2"] = X_pca[:,1]
 
-fig_dr = px.scatter(
+fig_pca = px.scatter(
     crosstab_df,
     x="dim_1",
     y="dim_2",
     color="cluster_B"
 )
-st.plotly_chart(fig_dr, width="stretch")
+st.subheader("PCA visualization")
+st.plotly_chart(fig_pca, width="stretch")
 
 # Taking average lat/lon to find centroid. Not the best way geographically but good enough for now.
 # Also taking count of total num businesses
@@ -75,7 +76,11 @@ with st.expander("Crosstab DF with all data I need"):
     st.write(crosstab_df)
 
 # Visualize on map
+st.subheader("Map visualization")
 fig = px.scatter_map(crosstab_df, lat="lat", lon="lon", zoom=10, height=550, map_style="carto-darkmatter", color="cluster_B", size="num_biz")
 st.plotly_chart(fig, width="stretch")
 
-# for index, row in crosstab_df.iterrows():
+# See clustering
+with st.expander("Neighborhood and cluster"):
+    area_clusters = crosstab_df[["cluster_B"]]
+    st.write(area_clusters)
